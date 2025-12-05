@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">prack_2_EpimakhovD</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">From the Square world,\nHello, %1$s!</string>
+    <string name="title_activity_main2">MainActivity2</string>
+
+    <string name="text_SignInScreen">WorldCinema</string>
+    <string name="text_email">E-mail</string>
+    <string name="text_hint_email">you@example.com</string>
+
+    <string name="text_pass">Пароль</string>
+    <string name="text_hint_pass">Ваш пароль</string>
+    <string name="text_btn_enter">Войти</string>
+    <string name="text_title_chat">Обсуждения</string>
+    <string name="text_item_lucifer">Lucifer</string>
+    <string name="text_item_the_witcher">The Witcher</string>
+    <string name="text_item_LOST">LOST</string>
+    <string name="text_item_the_magicians">The Magicians</string>
+    <string name="text_description_dis">Обсуждения</string>
+    <string name="text_description_fav">Избранное</string>
+    <string name="text_title_new">Новое</string>
+    <string name="text_des_witcher">Witcher</string>
+    <string name="text_des_play">Play</string>
+    <string name="text_des_jessica_jones">Jessica Jones</string>
+    <string name="text_des_magicians">Magicians</string>
+</resources>
