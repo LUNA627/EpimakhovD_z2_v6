@@ -1,5 +1,6 @@
 package com.example.prack_2_epimakhovd.presentation
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.prack_2_epimakhovd.R
 import data.Task
 
-class TaskAdapter : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+class TaskAdapter(private val onDelete: (Task) -> Unit) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private var tasks = emptyList<Task>()
 
@@ -20,18 +21,37 @@ class TaskAdapter : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
+            .inflate(R.layout.item_task, parent, false)
         return TaskViewHolder(view)
     }
 
+
+
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(tasks[position])
+        val task = tasks[position]
+        holder.bind(task)
+
+        // 🔥 Клик по всей задаче → редактирование
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, EditTaskActivity::class.java).apply {
+                putExtra("TASK_ID", task.id)
+                putExtra("TASK_TITLE", task.title)
+            }
+            context.startActivity(intent)
+        }
+
+        // 🗑️ Клик на кнопку удаления
+        holder.btnDelete.setOnClickListener {
+            onDelete(task)
+        }
     }
 
     override fun getItemCount() = tasks.size
 
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(android.R.id.text1)
+        private val textView: TextView = itemView.findViewById(R.id.textTask)
+        val btnDelete: ImageView = itemView.findViewById(R.id.btnDelete)
 
         fun bind(task: Task) {
             textView.text = task.title

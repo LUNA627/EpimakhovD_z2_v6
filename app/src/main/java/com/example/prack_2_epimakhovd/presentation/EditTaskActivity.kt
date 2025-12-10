@@ -1,6 +1,7 @@
 package com.example.prack_2_epimakhovd.presentation
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -36,6 +37,9 @@ class EditTaskActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.title).text = "Редактировать задачу"
         findViewById<Button>(R.id.btnSave).text = "СОХРАНИТЬ ИЗМЕНЕНИЯ"
 
+        val editTask = findViewById<EditText>(R.id.editTask)
+        val btnSave = findViewById<Button>(R.id.btnSave)
+
         // Получаем данные
         taskId = intent.getIntExtra("TASK_ID", -1)
         val title = intent.getStringExtra("TASK_TITLE") ?: ""
@@ -44,12 +48,11 @@ class EditTaskActivity : AppCompatActivity() {
             return
         }
 
-        // Заполняем поле
-        findViewById<EditText>(R.id.editTask).setText(title)
+        editTask.setText(title)
 
-        // Обработка сохранения
-        findViewById<Button>(R.id.btnSave).setOnClickListener {
-            val newText = findViewById<EditText>(R.id.editTask).text.toString().trim()
+        // Сохранение
+        btnSave.setOnClickListener {
+            val newText = editTask.text.toString().trim()
             if (newText.isEmpty()) {
                 Snackbar.make(findViewById(R.id.rootLayout), "Введите текст задачи", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -59,10 +62,12 @@ class EditTaskActivity : AppCompatActivity() {
                 db.taskDao().updateTask(Task(id = taskId, title = newText))
 
                 withContext(Dispatchers.Main) {
-                    Snackbar.make(findViewById(R.id.rootLayout), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
+                    setResult(RESULT_OK) // ← сообщает, что данные изменились
                     finish()
                 }
             }
         }
     }
+
+
 }

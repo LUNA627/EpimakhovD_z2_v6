@@ -2,31 +2,31 @@ package com.example.prack_2_epimakhovd.presentation
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.view.View
 import android.widget.TextView
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.prack_2_epimakhovd.R
-import com.google.android.material.snackbar.Snackbar
 import data.AppDatabase
-import data.Task
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class CharListScreenActivity : ComponentActivity() {
+class CharListScreenActivity : AppCompatActivity() {
     private lateinit var backText: TextView
-
+    private lateinit var adapter: TaskAdapter
 
     private lateinit var db: AppDatabase
-    private var taskId = -1
-    private lateinit var editTask: EditText
+
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var textEmpty: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_activity)
+        setContentView(R.layout.activity_chat_list_screen)
 
         backText = findViewById(R.id.title)
         backText.setOnClickListener {
@@ -36,7 +36,9 @@ class CharListScreenActivity : ComponentActivity() {
 
 
 
-        findViewById<TextView>(R.id.title).text = "Редактировать задачу"
+        recyclerView = findViewById(R.id.recyclerView)
+        textEmpty = findViewById(R.id.textEmpty)
+
 
         db = Room.databaseBuilder(
             applicationContext,
@@ -44,38 +46,32 @@ class CharListScreenActivity : ComponentActivity() {
             "tasks-db"
         ).build()
 
-        editTask = findViewById(R.id.editTask)
-        val btnSave = findViewById<Button>(R.id.btnSave)
-
-        // Получаем ID задачи из Intent
-        taskId = intent.getIntExtra("TASK_ID", -1)
-        val taskTitle = intent.getStringExtra("TASK_TITLE") ?: ""
-
-        if (taskId == -1) {
-            finish() // некорректный вызов
-            return
-        }
-
-        editTask.setText(taskTitle)
-
-        btnSave.text = "СОХРАНИТЬ ИЗМЕНЕНИЯ"
-
-        btnSave.setOnClickListener {
-            val newText = editTask.text.toString().trim()
-            if (newText.isEmpty()) {
-                Snackbar.make(findViewById(R.id.rootLayout), "Введите текст задачи", Snackbar.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
+        adapter = TaskAdapter() { task ->
             CoroutineScope(Dispatchers.IO).launch {
-                db.taskDao().updateTask(Task(id = taskId, title = newText))
-
-                withContext(Dispatchers.Main) {
-                    Snackbar.make(findViewById(R.id.rootLayout), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
-                    setResult(RESULT_OK) // чтобы обновить список
-                    finish()
-                }
+                db.taskDao().deleteTask(task)
+                refreshList()
             }
         }
+
+
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        refreshList()
+    }
+
+    private fun refreshList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val tasks = db.taskDao().getAllTasks()
+            runOnUiThread {
+                adapter.updateTasks(tasks)
+                textEmpty.visibility = if (tasks.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshList()
     }
 }

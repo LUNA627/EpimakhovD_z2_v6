@@ -73,9 +73,11 @@ class AddScreenActivity : ComponentActivity() {
                             "Задача сохранена",
                             Snackbar.LENGTH_SHORT
                         ).show()
-                        finish()
+
                     }
                 }
+                startActivity(Intent(this, MainScreenActivity::class.java))
+                finish()
             }
 
         }
