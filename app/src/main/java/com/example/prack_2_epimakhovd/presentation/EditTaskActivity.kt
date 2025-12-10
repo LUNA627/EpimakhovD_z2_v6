@@ -1,11 +1,10 @@
 package com.example.prack_2_epimakhovd.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.example.prack_2_epimakhovd.R
 import com.google.android.material.snackbar.Snackbar
@@ -16,52 +15,41 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CharListScreenActivity : ComponentActivity() {
-    private lateinit var backText: TextView
-
+class EditTaskActivity : AppCompatActivity() {
 
     private lateinit var db: AppDatabase
-    private var taskId = -1
-    private lateinit var editTask: EditText
+    private var taskId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // ✅ Правильное имя layout'а
         setContentView(R.layout.activity_add_activity)
 
-        backText = findViewById(R.id.title)
-        backText.setOnClickListener {
-            startActivity(Intent(this, MainScreenActivity::class.java))
-            finish()
-        }
-
-
-
-        findViewById<TextView>(R.id.title).text = "Редактировать задачу"
-
+        // Инициализация базы
         db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "tasks-db"
         ).build()
 
-        editTask = findViewById(R.id.editTask)
-        val btnSave = findViewById<Button>(R.id.btnSave)
+        // Меняем заголовок и кнопку
+        findViewById<TextView>(R.id.title).text = "Редактировать задачу"
+        findViewById<Button>(R.id.btnSave).text = "СОХРАНИТЬ ИЗМЕНЕНИЯ"
 
-        // Получаем ID задачи из Intent
+        // Получаем данные
         taskId = intent.getIntExtra("TASK_ID", -1)
-        val taskTitle = intent.getStringExtra("TASK_TITLE") ?: ""
-
+        val title = intent.getStringExtra("TASK_TITLE") ?: ""
         if (taskId == -1) {
-            finish() // некорректный вызов
+            finish()
             return
         }
 
-        editTask.setText(taskTitle)
+        // Заполняем поле
+        findViewById<EditText>(R.id.editTask).setText(title)
 
-        btnSave.text = "СОХРАНИТЬ ИЗМЕНЕНИЯ"
-
-        btnSave.setOnClickListener {
-            val newText = editTask.text.toString().trim()
+        // Обработка сохранения
+        findViewById<Button>(R.id.btnSave).setOnClickListener {
+            val newText = findViewById<EditText>(R.id.editTask).text.toString().trim()
             if (newText.isEmpty()) {
                 Snackbar.make(findViewById(R.id.rootLayout), "Введите текст задачи", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -72,7 +60,6 @@ class CharListScreenActivity : ComponentActivity() {
 
                 withContext(Dispatchers.Main) {
                     Snackbar.make(findViewById(R.id.rootLayout), "Задача обновлена", Snackbar.LENGTH_SHORT).show()
-                    setResult(RESULT_OK) // чтобы обновить список
                     finish()
                 }
             }

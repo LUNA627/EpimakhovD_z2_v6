@@ -24,7 +24,7 @@ class SignInScreenActivity : AppCompatActivity() {
 
         email = findViewById(R.id.edit_email)
         password = findViewById(R.id.edit_password)
-        loginButton = findViewById(R.id.button_enter)
+        loginButton = findViewById(R.id.loginButton)
 
         val rView = findViewById<View>(android.R.id.content)
 

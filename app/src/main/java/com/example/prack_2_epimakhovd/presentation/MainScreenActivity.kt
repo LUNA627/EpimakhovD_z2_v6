@@ -8,29 +8,44 @@ package com.example.prack_2_epimakhovd.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.example.prack_2_epimakhovd.R
-import android.widget.Button
 import android.content.Intent
-import android.media.Image
 import android.widget.ImageView
+import com.squareup.picasso.Picasso
 
 class MainScreenActivity : ComponentActivity() {
-    private lateinit var imgBtnDis: ImageView
-    private lateinit var imgBtnFav: ImageView
+    private lateinit var imgBtnRecord: ImageView
+    private lateinit var imgBtnGoal: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_screen)
 
-        imgBtnDis = findViewById(R.id.img_enter)
-        imgBtnFav = findViewById(R.id.img_enter_fav)
+        imgBtnRecord = findViewById(R.id.icon_add)
+        imgBtnGoal = findViewById(R.id.icon_goals)
 
-        imgBtnDis.setOnClickListener{
-            startActivity(Intent(this, CharListScreenActivity::class.java))
+
+        val urlAdd = "https://cdn-icons-png.flaticon.com/512/3980/3980807.png"
+        val urlGoal = "https://cdn-icons-png.flaticon.com/512/7318/7318482.png"
+
+        Picasso.get()
+            .load(urlAdd)
+            .fit()
+            .centerCrop()
+            .into(imgBtnRecord)
+
+        Picasso.get()
+            .load(urlGoal)
+            .fit()
+            .centerCrop()
+            .into(imgBtnGoal)
+
+        imgBtnRecord.setOnClickListener{
+            startActivity(Intent(this, AddScreenActivity::class.java))
             finish()
         }
 
-        imgBtnFav.setOnClickListener{
-            startActivity(Intent(this, MoviesScreenActivity::class.java))
+        imgBtnGoal.setOnClickListener{
+            startActivity(Intent(this, CharListScreenActivity::class.java))
             finish()
         }
     }
